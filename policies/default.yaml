@@ -1,0 +1,5 @@
+policy:
+  actions:
+    EMAIL: mask
+    PERSON: pseudonymize
+  min_confidence: 0.7

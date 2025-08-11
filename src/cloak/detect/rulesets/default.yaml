@@ -1,0 +1,5 @@
+# Minimal regex rules (expand over time)
+patterns:
+  EMAIL: "(?:[a-z0-9._%+-]+)@(?:[a-z0-9.-]+\.[a-z]{2,})"
+  IP: "\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b"
+  PHONE: "(?:\+?\d[\d .-]{8,}\d)"

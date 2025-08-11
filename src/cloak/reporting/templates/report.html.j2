@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>cloak report</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
+    code { background: #f5f5f5; padding: 2px 4px; border-radius: 4px; }
+    .file { margin-bottom: 1.5rem; }
+    .badge { display:inline-block; background:#222; color:#fff; padding:2px 6px; border-radius:6px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <h1>cloak report</h1>
+  <p><span class="badge">{{ result.files }} files</span>
+     <span class="badge">{{ result.entities }} entities</span></p>
+
+  {% for f in result.findings %}
+    <div class="file">
+      <h3>{{ f.path }}</h3>
+      <ul>
+      {% for sp in f.spans %}
+        <li><code>{{ sp.type }}</code> — {{ sp.text }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</body>
+</html>
