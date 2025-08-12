@@ -1,0 +1,24 @@
+detectors:
+  regex:
+    enabled: true
+    patterns:
+      email:
+        pattern: '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+        type: EMAIL
+      phone:
+        pattern: '\b\d{3}[-.\s]??\d{3}[-.\s]??\d{4}\b'
+        type: PHONE
+  spacy:
+    enabled: true
+    model: en_core_web_sm
+    entities:
+      - PERSON
+      - ORG
+      - GPE
+      - LOC
+      - DATE
+      - NORP
+      - CARDINAL
+output:
+  format: html
+  confidence_threshold: 0.6
