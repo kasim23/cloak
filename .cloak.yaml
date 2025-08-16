@@ -1,24 +1,31 @@
+# user-facing config file. It tells Cloak which detectors to enable (regex, spacy, hf, etc.), 
+# which packs to load, thresholds, and output format.
 detectors:
   regex:
     enabled: true
-    patterns:
-      email:
-        pattern: '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
-        type: EMAIL
-      phone:
-        pattern: '\b\d{3}[-.\s]??\d{3}[-.\s]??\d{4}\b'
-        type: PHONE
+    regex_packs:
+      pii: true
+      secrets: true
+      network: true
+
   spacy:
     enabled: true
     model: en_core_web_sm
-    entities:
-      - PERSON
-      - ORG
-      - GPE
-      - LOC
-      - DATE
-      - NORP
-      - CARDINAL
+    min_confidence: 0.0
+
+  spacy_ruler:
+    enabled: true
+    address_patterns: true
+    id_patterns: true
+
 output:
   format: html
   confidence_threshold: 0.6
+
+
+# The confidence_threshold setting is a global cutoff:
+# If the detector’s score is ≥ threshold, Cloak keeps the match.
+# If it’s < threshold, Cloak discards it (treats as false positive).
+# Regex matches are usually “hard” (always ~0.99 by default)
+# spaCy entities come with a built-in probability/confidence.
+# Transformer models output softmax probabilities.
