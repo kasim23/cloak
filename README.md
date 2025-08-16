@@ -1,60 +1,93 @@
-# cloak — privacy‑first PII scrubber (CLI)
+````markdown
+# cloak — privacy-first PII scrubber (CLI)
 
-**cloak** detects PII/PHI/secrets in datasets & documents and masks/pseudonymizes them while preserving referential integrity. Ships with reports and a review TUI. Optional RAG helpers.
+**cloak** finds and removes sensitive data (PII, PHI, secrets, tokens) in text files, datasets, and documents.  
+It masks or pseudonymizes them while keeping referential integrity, so the same name or ID always maps to the same placeholder.
 
-> Status: scaffold / MVP. You can install locally and run `cloak --help`.
+> **Status:** early MVP — works locally, tests pass, and growing fast. Expect rough edges.
 
-## Quick start (dev)
+---
+
+## 🚀 Quick start (dev)
 
 ```bash
-# using uv (recommended)
+# install uv (recommended)
 curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# setup dev env
 cd cloak
 uv venv -p 3.12
 source .venv/bin/activate
 uv pip install -e ".[dev]"
 
-# run
+# run CLI
 cloak --help
 cloak scan tests/fixtures/sample.txt --report out/report.html
 
-# tests & lint
+# test & lint
 pytest -q
 ruff check . && ruff format --check .
 mypy src
-```
+````
 
-## Install (once released)
+---
+
+## 📦 Install (when released)
+
 ```bash
 pipx install cloak-privacy
 # or
 uvx cloak-privacy
-# or Homebrew
+# or via Homebrew
 brew install cloaksh/tap/cloak
 ```
 
-## Commands
-- `cloak scan <path>`: dry-run detect + HTML report
-- `cloak scrub <src> --out <dst>`: write sanitized mirror
-- `cloak review <review.jsonl>`: TUI for low-confidence items
-- `cloak hook install`: add pre-commit hook (safety net)
-- `cloak eval <fixtures/>`: evaluation harness (precision/recall)
+---
 
-## Repo layout
+## 🛠 Commands
+
+* `cloak scan <path>` → detect sensitive items + write HTML report
+* `cloak scrub <src> --out <dst>` → create a sanitized copy
+* `cloak review <review.jsonl>` → review low-confidence detections in a TUI
+* `cloak hook install` → pre-commit hook (safety net)
+* `cloak eval <fixtures/>` → evaluate precision/recall
+
+---
+
+## 📂 Repo layout
+
 ```
 src/cloak/          # package
   cli.py            # Typer CLI entrypoint
-  __main__.py       # console_script target
-  config.py         # Pydantic models & loading
-  detect/           # detectors (regex/NER stubs)
-  engine/           # pipeline & decisions
-  reporting/        # HTML report
-  tui/              # Textual review app (stub)
-tests/              # pytest
+  detect/           # detectors (regex, spaCy, more to come)
+  engine/           # pipeline + scrub logic
+  reporting/        # HTML report generator
+  tui/              # TUI for review
+tests/              # pytest suite
 policies/           # example policies
 .github/workflows/  # CI
-packaging/homebrew/ # brew formula template
+packaging/homebrew/ # Homebrew formula
 ```
 
-## License
+---
+
+## 📋 License
+
 MIT
+
+---
+
+## 🔮 Future Plans / TODO
+
+* **Better actions**: stable pseudonymization, hashing, drop vs. redact policies
+* **Thresholds**: per-detector confidence levels (regex, spaCy, transformers)
+* **More detectors**: expand regex packs for secrets, IDs, tokens, and international PII
+* **Optional AI backends**: Hugging Face transformers (NER) via Docker
+* **Performance**: skip binaries, parallel scanning, batch processing
+* **Docs**: full MkDocs site with examples, config, and contributions guide
+* **Packaging**: PyPI release (`pipx install cloak-privacy`) + Homebrew tap
+* **CI/CD**: GitHub Actions for testing and publishing
+* **Telemetry (opt-in)**: anonymous usage stats (files scanned, entities detected)
+* **Review UX**: polish the TUI for comfortable human-in-the-loop workflows
+
+
