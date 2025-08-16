@@ -1,5 +1,4 @@
-````markdown
-# cloak — privacy-first PII scrubber (CLI)
+## cloak — privacy-first PII scrubber (CLI)
 
 **cloak** finds and removes sensitive data (PII, PHI, secrets, tokens) in text files, datasets, and documents.  
 It masks or pseudonymizes them while keeping referential integrity, so the same name or ID always maps to the same placeholder.
