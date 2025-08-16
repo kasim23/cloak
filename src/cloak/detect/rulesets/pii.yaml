@@ -1,0 +1,34 @@
+patterns:
+  EMAIL:
+    regex: '\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b'
+    flags: ["I"]
+    confidence: 0.99
+
+  PHONE:
+    regex: '(?:(?:\+?\d{1,3}[\s.\-]?)?(?:\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4}))'
+    confidence: 0.95
+
+  CREDIT_CARD:
+    regex: '\b(?:\d[ \-]*?){13,19}\b'
+    normalize: ["strip_spaces_dashes"]
+    validators: ["luhn"]
+    confidence: 0.99
+
+  SSN:
+    regex: '\b(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}\b'
+    confidence: 0.98
+
+  IBAN:
+    regex: '\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b'
+    validators: ["iban"]
+    confidence: 0.98
+
+  PASSPORT_US:
+    regex: '\b\d{9}\b'
+    type: PASSPORT
+    confidence: 0.6
+
+  DATE_ISO:
+    regex: '\b\d{4}-\d{2}-\d{2}\b'
+    type: DATE
+    confidence: 0.7
