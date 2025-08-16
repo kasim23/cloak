@@ -57,10 +57,15 @@ class SpacyBackend:
 
         # Load the model; disable components we don't need for speed.
         # Keep 'ner' active; others can be off for detection-only runs.
-        self.nlp = spacy.load(
-            model,
-            disable=["tagger", "parser", "lemmatizer", "attribute_ruler", "morphologizer"],
-        )
+        # BEFORE what I had
+        # self.nlp = spacy.load(
+        #     model,
+        #     disable=["tagger", "parser", "lemmatizer", "attribute_ruler", "morphologizer"],
+        # )
+        
+        # UPDATED FOR TESTS: load full default pipeline (fast enough for our tests)
+        self.nlp = spacy.load(model)
+        
         self.min_conf = float(min_confidence)
 
         # Map spaCy labels to Cloak's canonical schema.
