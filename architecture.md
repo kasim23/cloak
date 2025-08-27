@@ -13,3 +13,4 @@ flowchart LR
   FE -->|poll/progress| API
   API -->|signed URL / stream| FE
   FE -->|Download redacted ZIP| U
+```
