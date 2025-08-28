@@ -1,4 +1,3 @@
-Hello,
-This is a sample file.
-Email: alice@example.com
-Phone: +1 202-555-0147
+Alice’s US passport 123456789 and Visa 4111-1111-1111-1111 were logged by mistake.
+Her IBAN is DE89 3704 0044 0532 0130 00 and AWS key AKIA1234567890ABCD leaked too.
+IPv6: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
