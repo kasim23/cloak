@@ -1,5 +1,7 @@
-# src/cloak/engine/pipeline.py
-# SPDX-License-Identifier: Apache-2.0
+"""
+Orchestrates detectors, merges spans, delegates actions to ActionEngine.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -10,6 +12,7 @@ from ..config import CloakConfig
 from ..detect.regex_backend import RegexBackend
 from ..detect.spacy_backend import SpacyBackend
 from ..detect.spacy_ruler import SpacyRulerBackend
+from .actions import ActionEngine 
 
 
 # Structured types that should win overlap conflicts
@@ -52,6 +55,7 @@ class Pipeline:
     def __init__(self, cfg: CloakConfig, mode: str = "pseudonymize") -> None:
         self.cfg = cfg
         self.mode = mode
+        self._actions = ActionEngine(policy=cfg.policy)
 
         # --- Backends (toggle via .cloak.yaml) ---
         self.regex = (
@@ -138,12 +142,22 @@ class Pipeline:
                 yield p
 
     @staticmethod
-    def _adapt(spans: Sequence[Span]) -> List[Span]:
-        """
-        Ensure spans from all backends are the same dataclass shape.
-        (Backends already return compatible Span objects; this is here for symmetry.)
-        """
-        return list(spans)
+    def _adapt(spans: Sequence[object]) -> List[Span]:
+        out: List[Span] = []
+        for s in spans:
+            # already our Span
+            if hasattr(s, "start") and hasattr(s, "end") and hasattr(s, "text") and hasattr(s, "type"):
+                out.append(Span(int(s.start), int(s.end), str(s.text), str(s.type), float(getattr(s, "confidence", 0.99))))
+            elif isinstance(s, tuple) and len(s) == 5:
+                start, end, text, typ, conf = s
+                out.append(Span(int(start), int(end), str(text), str(typ), float(conf)))
+            elif isinstance(s, dict):
+                out.append(Span(int(s["start"]), int(s["end"]), str(s["text"]), str(s["type"]), float(s.get("confidence", 0.99))))
+            else:
+                # ignore unknown shape
+                continue
+        return out
+
 
     def _merge(self, spans: List[Span]) -> List[Span]:
         """
@@ -201,27 +215,15 @@ class Pipeline:
         return kept
 
     def _apply_actions(self, text: str, spans: List[Span]) -> str:
-        """
-        Minimal scrubber: uses policy later; for now, mask emails and redact others.
-        Replace from the end to keep indices valid.
-        """
-        if not spans:
-            return text
-        s = list(text)
-        for sp in sorted(spans, key=lambda x: x.start, reverse=True):
-            if sp.type == "EMAIL":
-                replacement = self._mask_email(sp.text)
-            else:
-                replacement = "[REDACTED]"
-            s[sp.start:sp.end] = list(replacement)
-        return "".join(s)
+        return self._actions.apply(text, spans)
 
-    @staticmethod
-    def _mask_email(email: str) -> str:
-        try:
-            user, domain = email.split("@", 1)
-            if len(user) <= 1:
-                return f"*@{domain}"
-            return f"{user[0]}***@{domain}"
-        except Exception:
-            return "[REDACTED]"
+    ###### no longer used; moved to actions.py ######
+    # @staticmethod
+    # def _mask_email(email: str) -> str:
+    #     try:
+    #         user, domain = email.split("@", 1)
+    #         if len(user) <= 1:
+    #             return f"*@{domain}"
+    #         return f"{user[0]}***@{domain}"
+    #     except Exception:
+    #         return "[REDACTED]"
