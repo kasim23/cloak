@@ -40,7 +40,9 @@ from .pseudonymizer import pseudonymizer_from_env
 # NOTE: We reference `Span` only for type hints. If you ever see circular-import issues,
 # you can avoid importing and just use quoted type names thanks to
 # `from __future__ import annotations`.
-from ..engine.pipeline import Span  # reuse the unified Span dataclass
+from typing import TYPE_CHECKING, List
+if TYPE_CHECKING:
+    from .pipeline import Span  # only for type hints; no runtime import
 
 
 # ------------------------------
@@ -189,7 +191,7 @@ class ActionEngine:
             "API_KEY": _mask_generic,
         }
 
-    def _replacement_for(self, sp: Span) -> str | None:
+    def _replacement_for(self, sp: "Span") -> str | None:
         """
         Decide the replacement for a single span according to the policy.
 
@@ -226,7 +228,7 @@ class ActionEngine:
         # Unknown action keyword: be conservative and hide the value
         return MaskToken
 
-    def apply(self, text: str, spans: List[Span]) -> str:
+    def apply(self, text: str, spans: List["Span"]) -> str:
         """
         Apply the policy actions to all spans within `text`.
 
