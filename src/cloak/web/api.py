@@ -335,6 +335,56 @@ async def get_redaction_suggestions():
         "suggestions": get_redaction_suggestions()
     }
 
+@app.post("/analyze-prompt")
+async def analyze_prompt(request: dict):
+    """Analyze a natural language prompt to show what entities will be redacted/kept."""
+    from ..nl.redaction_parser import RedactionPromptParser
+    
+    prompt = request.get("prompt", "").strip()
+    if not prompt:
+        return {
+            "entities_to_redact": [],
+            "entities_to_keep": [],
+            "unrecognized_terms": [],
+            "confidence": "high"
+        }
+    
+    try:
+        parser = RedactionPromptParser()
+        result = parser.parse_redaction_prompt(prompt)
+        
+        # Convert the parsed result into a user-friendly format
+        entities_to_redact = []
+        entities_to_keep = []
+        
+        for entity_type, action in result.entity_actions.items():
+            if action == "redact":
+                entities_to_redact.append(entity_type)
+            elif action == "keep":
+                entities_to_keep.append(entity_type)
+        
+        # Determine confidence based on how much we could parse
+        total_words = len(prompt.split())
+        recognized_patterns = len(entities_to_redact) + len(entities_to_keep)
+        confidence = "high" if recognized_patterns > 0 else "low"
+        
+        return {
+            "entities_to_redact": entities_to_redact,
+            "entities_to_keep": entities_to_keep,
+            "unrecognized_terms": [],  # Could be enhanced to detect unrecognized terms
+            "confidence": confidence,
+            "parsed_intent": result.intent
+        }
+    
+    except Exception as e:
+        return {
+            "entities_to_redact": [],
+            "entities_to_keep": [],
+            "unrecognized_terms": [prompt],
+            "confidence": "low",
+            "error": str(e)
+        }
+
 # Development endpoints (remove in production)
 @app.get("/dev/test-redaction")
 async def test_redaction():
