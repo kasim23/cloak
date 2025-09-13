@@ -3,6 +3,7 @@ import { apiClient } from '@/lib/api';
 import {
   RedactionRequest,
   SuggestionsRequest,
+  AnalyzePromptRequest,
 } from '@/types/api';
 
 export const useUploadFile = () => {
@@ -69,6 +70,15 @@ export const useGetSuggestions = () => {
     mutationFn: (request: SuggestionsRequest) => apiClient.getSuggestions(request),
     onError: (error) => {
       console.error('Failed to get suggestions:', error);
+    },
+  });
+};
+
+export const useAnalyzePrompt = () => {
+  return useMutation({
+    mutationFn: (request: AnalyzePromptRequest) => apiClient.analyzePrompt(request),
+    onError: (error) => {
+      console.error('Failed to analyze prompt:', error);
     },
   });
 };

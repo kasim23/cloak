@@ -44,3 +44,16 @@ export interface ErrorResponse {
   detail: string;
   status_code: number;
 }
+
+export interface AnalyzePromptRequest {
+  prompt: string;
+}
+
+export interface AnalyzePromptResponse {
+  entities_to_redact: string[];
+  entities_to_keep: string[];
+  unrecognized_terms: string[];
+  confidence: 'high' | 'medium' | 'low';
+  parsed_intent?: string;
+  error?: string;
+}
